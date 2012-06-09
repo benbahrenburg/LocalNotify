@@ -1,0 +1,18 @@
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 0.1
+apiversion: 2
+description: bencoding.localnotify extends Titaniums existing Local Notification support.
+author: benCoding.Com
+license: See attached licensing file
+copyright: Copyright (c) 2012 by benCoding.Com
+
+
+# these should not be edited
+name: localnotify
+moduleid: bencoding.localnotify
+guid: 648e81b4-9d78-4857-8fc9-688af1d23358
+platform: iphone
+minsdk: 1.8.2
