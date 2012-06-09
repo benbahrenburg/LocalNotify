@@ -54,7 +54,7 @@ The below sample shows you how to schedule a local notification to run in 30 sec
 	alert("LocalNotification Scheduled");
 </code></pre>
 
-<h3>returnLocationNotificationList</h3>
+<h3>activeScheduledNotifications</h3>
 You can use this method to query your scheduled local notifications.  Simply call this method and provide a callback method similar to what is shown below.  The callback will be returned a collection with all of the available information about your scheduled local notifications.
 
 The below sample shows how to create a callback that queries your scheduled local notifications. You can then loop through the results in your callback function.
@@ -74,7 +74,7 @@ The below sample shows how to create a callback that queries your scheduled loca
 	};
 
 	//Call this method and return a callback with the results
-	notify.returnLocationNotificationList(localNotificationCallback);
+	notify.activeScheduledNotifications(localNotificationCallback);
 
 </code></pre>
 
@@ -91,7 +91,7 @@ The below sample shows how to cancel a local notification with the userInfo id p
 	notify.cancelLocalNotification(1);
 	
 	//Now query the scheduled notifications to make sure our local notification was canceled
-	notify.returnLocationNotificationList(localNotificationCallback);
+	notify.activeScheduledNotifications(localNotificationCallback);
 
 </code></pre>
 

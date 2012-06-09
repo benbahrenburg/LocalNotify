@@ -207,12 +207,12 @@
                           nil];
     return data;
 }
--(void) returnLocationNotificationList:(id)args
+-(void) activeScheduledNotifications:(id)args
 {
     ENSURE_ARG_COUNT(args,1);
 	KrollCallback *callback = [args objectAtIndex:0];
 	ENSURE_TYPE(callback,KrollCallback);
-    ENSURE_UI_THREAD(returnLocationNotificationList,args);
+    ENSURE_UI_THREAD(activeScheduledNotifications,args);
      
     //Get a list of all of the notifications I've got scheduled
     NSArray *notifications = [[UIApplication sharedApplication] scheduledLocalNotifications];

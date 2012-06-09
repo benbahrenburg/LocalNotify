@@ -43,7 +43,7 @@ function localNotificationCallback(e){
 	if(e.success){
 		Ti.API.info("Let's how many local notifications we have scheduled'");
 		Ti.API.info("Scheduled LocalNotification = " + e.scheduledCount);	
-		alert("You have " +  e.scheduledCount + "Scheduled LocalNotification");
+		alert("You have " +  e.scheduledCount + " Scheduled LocalNotification");
 	}	
 
 	var test = JSON.stringify(e);
@@ -51,7 +51,7 @@ function localNotificationCallback(e){
 };
 testButton2.addEventListener('click', function(){
 	//Call this method and return a callback with the results
-	notify.returnLocationNotificationList(localNotificationCallback);
+	notify.activeScheduledNotifications(localNotificationCallback);
 });
 
 
@@ -67,7 +67,7 @@ testButton3.addEventListener('click', function(){
 	//We are going to remove all of the LocalNotifications scheduled with a userInfo id value of 1
 	notify.cancelLocalNotification(1);
 	//Now query the scheduled notifications to make sure our local notification was canceled
-	notify.returnLocationNotificationList(localNotificationCallback);
+	notify.activeScheduledNotifications(localNotificationCallback);
 });
 
 var testButton4 = Ti.UI.createButton({
