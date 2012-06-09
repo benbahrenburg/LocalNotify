@@ -7,7 +7,7 @@ This module provides helper functions for creating Local Notifications within yo
 
 <h2>Download the release</h2>
 
-This module is freely available on github. Check the dist folder for a compiled release.
+This module is freely available on [github](https://github.com/benbahrenburg/LocalNotify/). Check the [dist folder](https://github.com/benbahrenburg/LocalNotify/tree/master/dist) for a compiled release.
 
 <h2>Building from source?</h2>
 
@@ -16,7 +16,7 @@ If you are building from source you will need to do the following:
 
 <h2>Setup</h2>
 
-* Download the latest release from the dist folder ( or you can build it yourself )
+* Download the latest release from the [dist folder](https://github.com/benbahrenburg/LocalNotify/tree/master/dist)  or you can build it yourself.
 * Install the bencoding.dictionary module. If you need help here is a "How To" [guide](https://wiki.appcelerator.org/display/guides/Configuring+Apps+to+Use+Modules). 
 * You can now use the module via the commonJS require method, example shown below.
 
