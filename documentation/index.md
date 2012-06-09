@@ -51,6 +51,7 @@ The below sample shows you how to schedule a local notification to run in 30 sec
 		date:new Date(new Date().getTime() + 30000) 
 	});
 
+	alert("LocalNotification Scheduled");
 </code></pre>
 
 <h3>returnLocationNotificationList</h3>
@@ -65,6 +66,7 @@ The below sample shows how to create a callback that queries your scheduled loca
 		if(e.success){
 			Ti.API.info("Let's how many local notifications we have scheduled'");
 			Ti.API.info("Scheduled LocalNotification = " + e.scheduledCount);	
+			alert("You have " +  e.scheduledCount + " Scheduled LocalNotification");
 		}	
 
 		var test = JSON.stringify(e);

@@ -270,11 +270,7 @@
     int cancelCounter = 0; //Create our counter
     
 	//See if we have any notifications to query over
-    if (notifications==nil)
-    {
-        NSLog(@"No scheduled notifications to query");
-    }
-    else
+    if (notifications!=nil)
 	{
        // NSLog(@"We have scheduled notification");
         NSUInteger notificationCount = [notifications count];
@@ -291,7 +287,7 @@
                      //If we have an UI we need to see if it matches the one we provided
                      if ([userIdofCurrentNotification intValue]==findThisId)
                      {
-                          NSLog(@"Cancelling notification: %d", [userIdofCurrentNotification intValue]);
+                          //NSLog(@"Cancelling notification: %d", [userIdofCurrentNotification intValue]);
                          [[UIApplication sharedApplication] cancelLocalNotification:currentNotification];
                          cancelCounter++;
                      }

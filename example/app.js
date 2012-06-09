@@ -23,8 +23,9 @@ testButton1.addEventListener('click', function(){
 		alertBody:"This is a test of benCoding.localNotify",
 		alertAction:"Just a test",
 		userInfo:{"id":1,"hello":"world"},
-		date:new Date(new Date().getTime() + 4000000) 
+		date:new Date(new Date().getTime() + 60000) 
 	});
+	alert("LocalNotification Scheduled");
 });
 
 var testButton2 = Ti.UI.createButton({
@@ -42,6 +43,7 @@ function localNotificationCallback(e){
 	if(e.success){
 		Ti.API.info("Let's how many local notifications we have scheduled'");
 		Ti.API.info("Scheduled LocalNotification = " + e.scheduledCount);	
+		alert("You have " +  e.scheduledCount + "Scheduled LocalNotification");
 	}	
 
 	var test = JSON.stringify(e);
