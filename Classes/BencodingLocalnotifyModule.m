@@ -207,6 +207,46 @@
                           nil];
     return data;
 }
+
+
+-(NSDictionary*) listScheduledNotifications
+{
+    //Get a list of all of the notifications I've got scheduled
+    NSArray *notifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
+    
+    //Check if we have any notifications scheduled
+    if (notifications==nil)
+	{
+        
+        NSDictionary *noScheduled = [NSDictionary dictionaryWithObjectsAndKeys:
+                                          [NSNumber numberWithInt:0],@"scheduledCount",                                   
+                                          nil];
+        return noScheduled;
+        
+    }
+    else
+    {
+
+        NSUInteger notificationCount = [notifications count];        
+        NSMutableArray *notificationData = [[[NSMutableArray alloc] init] autorelease];
+        
+        for (int iLoop = 0; iLoop < notificationCount; iLoop++) {
+            [notificationData addObject:[self buildNotificationPayload:[notifications objectAtIndex:iLoop]]];
+        } 
+        
+        NSDictionary *scheduled = [NSDictionary dictionaryWithObjectsAndKeys:
+                                        [NSNumber numberWithInt:notificationCount],@"scheduledCount",
+                                        notificationData,@"notifications",                                
+                                        nil];
+        return scheduled;
+    }    
+}
+
+-(NSDictionary*) returnScheduledNotifications:(id)args
+{
+    return self.listScheduledNotifications;
+}
+
 -(void) activeScheduledNotifications:(id)args
 {
     ENSURE_ARG_COUNT(args,1);
@@ -214,60 +254,27 @@
 	ENSURE_TYPE(callback,KrollCallback);
     ENSURE_UI_THREAD(activeScheduledNotifications,args);
      
-    //Get a list of all of the notifications I've got scheduled
-    NSArray *notifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
-
-    //Check if we have any notifications scheduled
-    if (notifications==nil)
-	{
-        //NSLog(@"No scheduled notifications");
-        if (callback){                
-            NSDictionary *eventNoScheduled = [NSDictionary dictionaryWithObjectsAndKeys:
-                                     [NSNumber numberWithInt:0],@"scheduledCount",
-                                     NUMBOOL(YES),@"success",                                     
-                                     nil];
-            
-            [self _fireEventToListener:@"completed" 
-                            withObject:eventNoScheduled listener:callback thisObject:nil];
-        } 
+    if (callback){                
         
-    }
-    else
-    {
-        //NSLog(@"We have scheduled notification");
-        NSUInteger notificationCount = [notifications count];        
-        NSMutableArray *notificationData = [[[NSMutableArray alloc] init] autorelease];
-
-        for (int iLoop = 0; iLoop < notificationCount; iLoop++) {
-            [notificationData addObject:[self buildNotificationPayload:[notifications objectAtIndex:iLoop]]];
-        } 
-       
-        if (callback){                
-            NSDictionary *eventScheduled = [NSDictionary dictionaryWithObjectsAndKeys:
-                                              [NSNumber numberWithInt:notificationCount],@"scheduledCount",
-                                               notificationData,@"notifications",
-                                              NUMBOOL(YES),@"success",                                     
-                                              nil];
-            
-            [self _fireEventToListener:@"completed" 
-                            withObject:eventScheduled listener:callback thisObject:nil];
-        }         
-    }
-    
+        NSDictionary *eventNotify = self.listScheduledNotifications;
+        
+        [self _fireEventToListener:@"completed" 
+                        withObject:eventNotify listener:callback thisObject:nil];
+    } 
 }
 
--(void)cancelLocalNotification:(id)args
+-(NSNumber*) cancelLocalNotification:(id)args
 {
     //Make sure we're on the right thread and everything
     ENSURE_ARG_COUNT(args,1);
     //My user Id to find
     NSInteger findThisId = [TiUtils intValue:[args objectAtIndex:0] def:-1000];
-    ENSURE_UI_THREAD(cancelLocalNotification,args);
+
     //NSLog(@"We are looking for the Id of %d", findThisId);
     
     //Get a list of all of the notifications I've got scheduled
 	NSArray *notifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
-    int cancelCounter = 0; //Create our counter
+    NSInteger cancelCounter = 0; //Create our counter
     
 	//See if we have any notifications to query over
     if (notifications!=nil)
@@ -297,6 +304,7 @@
     }
     
     NSLog(@"%d Notifications have been canceled", cancelCounter);
+    return NUMINT(cancelCounter);
 }
 
 @end

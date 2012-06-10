@@ -62,12 +62,9 @@ The below sample shows how to create a callback that queries your scheduled loca
 
 	//This is our callback for our scheduled local notification query
 	function localNotificationCallback(e){
-		Ti.API.info("Did it work? " + e.success);
-		if(e.success){
-			Ti.API.info("Let's how many local notifications we have scheduled'");
-			Ti.API.info("Scheduled LocalNotification = " + e.scheduledCount);	
-			alert("You have " +  e.scheduledCount + " Scheduled LocalNotification");
-		}	
+		Ti.API.info("Let's how many local notifications we have scheduled'");
+		Ti.API.info("Scheduled LocalNotification = " + e.scheduledCount);	
+		alert("You have " +  e.scheduledCount + " Scheduled LocalNotification");
 
 		var test = JSON.stringify(e);
 		Ti.API.info("results stringified" + test);
@@ -78,18 +75,38 @@ The below sample shows how to create a callback that queries your scheduled loca
 
 </code></pre>
 
+<h3>returnScheduledNotifications</h3>
+This method allows you to query your scheduled notification similar to activeScheduledNotifications but without the callback.
+
+Simply call the returnScheduledNotifications method and you will be returned a collection with all of the available information about your scheduled local notifications.
+
+The below sample shows how to get a resultset by using this method.
+<pre><code>
+
+	//Call this method to return a collection with information on your scheduled notifications
+	var results = notify.returnScheduledNotifications();
+	Ti.API.info("Let's how many local notifications we have scheduled'");
+	Ti.API.info("Scheduled LocalNotification = " + results.scheduledCount);	
+	alert("You have " +  results.scheduledCount + " Scheduled LocalNotification");
+	var test = JSON.stringify(results);
+	Ti.API.info("results stringified" + test);	
+
+</code></pre>
+
 <h3>cancelLocalNotification</h3>
 This method allows you to cancel a specific scheduled local notification using the userInfo dictionary.  To do this we use the convention of providing an id within the userInfo dictionary upon notification creation.
 
-In the above scheduleLocalNotification example you see we use userInfo:{"id":1,"hello":"world"} when creating the notification.  We can now use returnLocationNotificationList to cancel this scheduled notification by providing it the id of 1 as shown below.
+In the above scheduleLocalNotification example you see we use userInfo:{"id":1,"hello":"world"} when creating the notification.  
+
+The method cancelLocalNotification returns an integer with the number of scheduled notifications canceled. Since you can schedule one or more notifications with the same userInfo.id property this will let you know how many where removed without having to re-run the activeScheduledNotifications method. 
 
 The below sample shows how to cancel a local notification with the userInfo id property set to 1.  After canceling we query the saved notifications to confirm the cancel was successful.
 
 <pre><code>
 
 	//We are going to remove all of the LocalNotifications scheduled with a userInfo id value of 1
-	notify.cancelLocalNotification(1);
-	
+	var canceledCount = notify.cancelLocalNotification(1);
+	alert("You have canceled " + canceledCount + " notifications");
 	//Now query the scheduled notifications to make sure our local notification was canceled
 	notify.activeScheduledNotifications(localNotificationCallback);
 
