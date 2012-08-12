@@ -34,8 +34,6 @@
 	// this method is called when the module is first loaded
 	// you *must* call the superclass
 	[super startup];
-	
-	NSLog(@"[INFO] %@ loaded",self);
 }
 
 -(void)shutdown:(id)sender
@@ -67,6 +65,20 @@
 
 
 #pragma Public APIs
+
+-(NSNumber*)hasScheduledNotifications:(id)args
+{
+    BOOL hasScheduled = NO;
+    //Get a list of all of the notifications I've got scheduled
+    NSArray *notifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
+    
+    if ([notifications count] > 0)
+    {
+        hasScheduled = YES;
+    }
+    //This can call this to let them know if this feature is supported
+    return NUMBOOL(hasScheduled);
+}
 
 -(void)scheduleLocalNotification:(id)args
 {
@@ -244,7 +256,10 @@
 
 -(NSDictionary*) returnScheduledNotifications:(id)args
 {
-    return self.listScheduledNotifications;
+    
+    NSDictionary *results = [self listScheduledNotifications];
+    
+    return results;
 }
 
 -(void) activeScheduledNotifications:(id)args

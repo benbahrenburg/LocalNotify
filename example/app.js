@@ -101,5 +101,18 @@ testButton5.addEventListener('click', function(){
 	notify.activeScheduledNotifications(localNotificationCallback);	
 });
 
+var testButton6 = Ti.UI.createButton({
+	title:'Do we have Schedule Notifications?',
+	height:40,
+	width:300,
+	top:400
+});
+win.add(testButton5);
 
+testButton6.addEventListener('click', function(){
+	//Check if we have any scheduled notifications
+	var hasSchedule = notify.hasScheduledNotifications();
+	var msg = (hasSchedule) ? 'There Are Scheduled Notifications':'No notifications have been scheduled';
+	alert(msg);
+});
 win.open();
