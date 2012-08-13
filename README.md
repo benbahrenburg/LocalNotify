@@ -93,6 +93,45 @@ The below sample shows how to get a resultset by using this method.
 
 </code></pre>
 
+<h3>findLocalNotificationsByKey</h3>
+This method allows you to query your scheduled notification similar to activeScheduledNotifications but with using a value and key combination.  This method will return all notifications that has a matching UserInfo with the provided value and key combination.  In the below example, we return all notifications that have a userInfo.category property with a value of foo.
+
+The below sample shows how to get a resultset by using this method.
+<pre><code>
+
+	//Call this method to return a collection with information on your scheduled notifications
+	var results = notify.findLocalNotificationsByKey("foo","category");
+	Ti.API.info("Let's how many local notifications we have scheduled'");
+	Ti.API.info("Scheduled LocalNotification = " + results.scheduledCount);	
+	alert("You have " +  results.scheduledCount + " Scheduled LocalNotification");
+	var test = JSON.stringify(results);
+	Ti.API.info("results stringified" + test);
+
+</code></pre>
+
+<h3>searchLocalNotificationsByKey</h3>
+This method works in the same way as findLocalNotificationsByKey, but provides a callback method.
+
+In the below example, a callback is returned with all notifications that have a userInfo.category property with a value of foo.
+
+The below sample shows how to get a resultset by using this method.
+<pre><code>
+
+	//This is our callback for our scheduled local notification query
+	function localNotificationCallback(e){
+		Ti.API.info("Let's how many local notifications we have scheduled'");
+		Ti.API.info("Scheduled LocalNotification = " + e.scheduledCount);	
+		alert("You have " +  e.scheduledCount + " Scheduled LocalNotification");
+
+		var test = JSON.stringify(e);
+		Ti.API.info("results stringified" + test);
+	};
+
+	//Call this method and return a callback with the results
+	notify.searchLocalNotificationsByKey("foo","category",localNotificationCallback);
+
+</code></pre>
+
 <h3>cancelLocalNotification</h3>
 This method allows you to cancel a specific scheduled local notification using the userInfo dictionary.  To do this we use the convention of providing an id within the userInfo dictionary upon notification creation.
 
@@ -106,6 +145,27 @@ The below sample shows how to cancel a local notification with the userInfo id p
 
 	//We are going to remove all of the LocalNotifications scheduled with a userInfo id value of 1
 	var canceledCount = notify.cancelLocalNotification(1);
+	alert("You have canceled " + canceledCount + " notifications");
+	//Now query the scheduled notifications to make sure our local notification was canceled
+	notify.activeScheduledNotifications(localNotificationCallback);
+
+</code></pre>
+
+<h3>cancelLocalNotificationByKey</h3>
+This method allows you to cancel a specific scheduled local notification using any key defined in the userInfo dictionary.  
+
+In the above scheduleLocalNotification example you see we use userInfo:{"id":1,"hello":"world","category":"foo"} when creating the notification.  
+
+You can use any of the defined keys to cancel an event. In the below example, you see that a key of "category" is provided along with the value of "foo". This will remove all notifications that meet this criteria.
+
+The method cancelLocalNotificationByKey returns an integer with the number of scheduled notifications canceled. Since you can schedule one or more notifications with the same property information this will let you know how many where removed without having to re-run the activeScheduledNotifications method. 
+
+The below sample shows how to cancel a local notification with the userInfo "category" property set to "foo".  After canceling we query the saved notifications to confirm the cancel was successful.
+
+<pre><code>
+
+	//We are going to remove all of the LocalNotifications scheduled with a userInfo id value of 1
+	var canceledCount =  notify.cancelLocalNotificationByKey("foo","category");
 	alert("You have canceled " + canceledCount + " notifications");
 	//Now query the scheduled notifications to make sure our local notification was canceled
 	notify.activeScheduledNotifications(localNotificationCallback);

@@ -208,15 +208,38 @@
 //    NSLog(@"hasAction: %@",  NUMBOOL([notification hasAction]));
 //    NSLog(@"alertLaunchImage: %@", [notification alertLaunchImage]);
     
-    NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
+    NSMutableDictionary *data = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                           [notification fireDate],@"fireDate",
                           interval,@"repeatInterval",
-                          [notification alertBody],@"alertBody",
-                          [notification alertAction],@"alertAction",
                            NUMBOOL([notification hasAction]),@"hasAction",
-                          [notification alertLaunchImage ],@"alertLaunchImage ",
-                          notification.userInfo, @"userInfo",
                           nil];
+    
+    if([notification alertBody]!=nil)
+    {
+        [data setObject:[notification alertBody] forKey:@"alertBody"];
+    }
+    if([notification alertAction]!=nil)
+    {
+        [data setObject:[notification alertAction] forKey:@"alertAction"];
+    }   
+    if([notification alertLaunchImage]!=nil)
+    {
+        [data setObject:[notification alertLaunchImage] forKey:@"alertLaunchImage"];
+    }     
+    if([notification soundName]!=nil)
+    {
+        [data setObject:[notification soundName] forKey:@"sound"];
+    }         
+    if([notification applicationIconBadgeNumber]!=0)
+    {
+        [data setObject:[NSNumber numberWithInt:[notification applicationIconBadgeNumber]] forKey:@"badge"];
+    }
+    if([notification userInfo]!=nil)
+    {
+        [data setObject:[notification userInfo] forKey:@"userInfo"];
+    }    
+    
+    //NSLog(@"data: %@", data);
     return data;
 }
 
@@ -254,11 +277,85 @@
     }    
 }
 
+-(NSDictionary*) queryLocalNotificationsForKey:(id)findKey keyName:(NSString*)keyName
+{
+    //Get a list of all of the notifications I've got scheduled
+	NSArray *notifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
+    NSInteger addCounter = 0; //Create our counter
+    NSMutableArray *notificationData = [[[NSMutableArray alloc] init] autorelease];
+    
+    if (notifications!=nil)
+	{
+        // NSLog(@"We have scheduled notification");
+        NSUInteger notificationCount = [notifications count];
+        // NSLog(@"%d notification(s) scheduled", notificationCount);
+        for (int iLoop = 0; iLoop < notificationCount; iLoop++) {
+            UILocalNotification* currentNotification = [notifications objectAtIndex:iLoop];
+            if(currentNotification.userInfo!=nil)
+            {
+                NSDictionary *userInfoCurrent = currentNotification.userInfo;
+                id userKeyFromCurrentNotification = [userInfoCurrent valueForKey:keyName];
+                if(userKeyFromCurrentNotification!=nil)
+                {
+                    //NSLog(@"Checking notification with id of  %d", [userIdofCurrentNotification intValue]);
+                    //If we have an UI we need to see if it matches the one we provided
+                    if ([userKeyFromCurrentNotification isEqual:findKey])
+                    {
+                        [notificationData addObject:[self buildNotificationPayload:currentNotification]];
+                        addCounter++;
+                    }
+                }
+            }
+        }
+    }
+    
+    NSDictionary *found = [NSDictionary dictionaryWithObjectsAndKeys:
+                           [NSNumber numberWithInt:addCounter],@"scheduledCount",
+                           notificationData,@"notifications",                                
+                           nil];
+    return found;    
+}
+
+
+-(NSDictionary*) findLocalNotificationsByKey:(id)args
+{
+    ENSURE_ARG_COUNT(args,2);
+    //Get the ID value we are searching for
+    id findThisId = [args objectAtIndex:0];
+    //Find what key we are looking for
+    NSString *findThisKey = [TiUtils stringValue:[args objectAtIndex:1]];
+    //Find the results by key
+    NSDictionary *results = [self queryLocalNotificationsForKey:findThisId keyName:findThisKey];
+    return results;
+}
+
+-(void) searchLocalNotificationsByKey:(id)args
+{
+    ENSURE_ARG_COUNT(args,3);
+    //Get the ID value we are searching for
+    id findThisId = [args objectAtIndex:0];
+    //Find what key we are looking for
+    NSString *findThisKey = [TiUtils stringValue:[args objectAtIndex:1]];
+    //Grab the callback function so that we can use it later
+    KrollCallback *callback = [args objectAtIndex:2];
+    //Double check that it is a callback
+	ENSURE_TYPE(callback,KrollCallback);
+    //Force this to happen on the UIThread
+    ENSURE_UI_THREAD(searchLocalNotificationsByKey,args);
+    
+    if (callback){                
+        
+        NSDictionary *eventNotify = [self queryLocalNotificationsForKey:findThisId keyName:findThisKey];
+        
+        [self _fireEventToListener:@"completed" 
+                        withObject:eventNotify listener:callback thisObject:nil];
+    } 
+}
+
+
 -(NSDictionary*) returnScheduledNotifications:(id)args
 {
-    
-    NSDictionary *results = [self listScheduledNotifications];
-    
+    NSDictionary *results = [self listScheduledNotifications];    
     return results;
 }
 
@@ -271,55 +368,68 @@
      
     if (callback){                
         
-        NSDictionary *eventNotify = self.listScheduledNotifications;
+        NSDictionary *eventNotify = [self listScheduledNotifications];
         
         [self _fireEventToListener:@"completed" 
                         withObject:eventNotify listener:callback thisObject:nil];
     } 
 }
 
+-(NSInteger) cancelLocalNotifForKey:(id)findKey keyName:(NSString*)keyName
+{
+	NSArray *notifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
+    NSInteger cancelCounter = 0; //Create our counter
+    
+    if (notifications!=nil)
+	{
+        // NSLog(@"We have scheduled notification");
+        NSUInteger notificationCount = [notifications count];
+        // NSLog(@"%d notification(s) scheduled", notificationCount);
+        for (int iLoop = 0; iLoop < notificationCount; iLoop++) {
+            UILocalNotification* currentNotification = [notifications objectAtIndex:iLoop];
+            if([currentNotification userInfo]!=nil)
+            {
+                NSDictionary *userInfoCurrent = [currentNotification userInfo];
+                id userKeyFromCurrentNotification = [userInfoCurrent valueForKey:keyName];
+                if(userKeyFromCurrentNotification!=nil)
+                {
+                    //NSLog(@"Checking notification with id of  %d", [userIdofCurrentNotification intValue]);
+                    //If we have an UI we need to see if it matches the one we provided
+                    if ([userKeyFromCurrentNotification isEqual:findKey])
+                    {
+                        [[UIApplication sharedApplication] cancelLocalNotification:currentNotification];
+                        cancelCounter++;
+                    }
+                }
+            }
+        }
+    }
+    NSLog(@"%d Notifications have been canceled", cancelCounter);
+    return cancelCounter;    
+}
+-(NSNumber*) cancelLocalNotificationByKey:(id)args
+{
+    //Make sure we're on the right thread and everything
+    ENSURE_ARG_COUNT(args,2);
+    //My user Id to find
+    id findThisId = [args objectAtIndex:0];
+    //Find what key we are looking for
+    NSString *findThisKey = [TiUtils stringValue:[args objectAtIndex:1]];    
+    NSInteger cancelCount = [self cancelLocalNotifForKey:findThisId keyName:findThisKey];
+    
+    NSLog(@"%d Notifications have been canceled", cancelCount);
+    return NUMINT(cancelCount);
+}
 -(NSNumber*) cancelLocalNotification:(id)args
 {
     //Make sure we're on the right thread and everything
     ENSURE_ARG_COUNT(args,1);
     //My user Id to find
-    NSInteger findThisId = [TiUtils intValue:[args objectAtIndex:0] def:-1000];
+    id findThisId = [args objectAtIndex:0];
+    NSInteger cancelCount = [self cancelLocalNotifForKey:findThisId keyName:@"id"];
 
-    //NSLog(@"We are looking for the Id of %d", findThisId);
-    
-    //Get a list of all of the notifications I've got scheduled
-	NSArray *notifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
-    NSInteger cancelCounter = 0; //Create our counter
-    
-	//See if we have any notifications to query over
-    if (notifications!=nil)
-	{
-       // NSLog(@"We have scheduled notification");
-        NSUInteger notificationCount = [notifications count];
-       // NSLog(@"%d notification(s) scheduled", notificationCount);
-        for (int iLoop = 0; iLoop < notificationCount; iLoop++) {
-             UILocalNotification* currentNotification = [notifications objectAtIndex:iLoop];
-             if(currentNotification.userInfo!=nil)
-             {
-                  NSDictionary *userInfoCurrent = currentNotification.userInfo;
-                 id userIdofCurrentNotification = [userInfoCurrent valueForKey:@"id"];
-                 if(userIdofCurrentNotification!=nil)
-                 {
-                     //NSLog(@"Checking notification with id of  %d", [userIdofCurrentNotification intValue]);
-                     //If we have an UI we need to see if it matches the one we provided
-                     if ([userIdofCurrentNotification intValue]==findThisId)
-                     {
-                          //NSLog(@"Cancelling notification: %d", [userIdofCurrentNotification intValue]);
-                         [[UIApplication sharedApplication] cancelLocalNotification:currentNotification];
-                         cancelCounter++;
-                     }
-                 }
-             }
-        }
-    }
-    
-    NSLog(@"%d Notifications have been canceled", cancelCounter);
-    return NUMINT(cancelCounter);
+    NSLog(@"%d Notifications have been canceled", cancelCount);
+    return NUMINT(cancelCount);
 }
 
 @end
