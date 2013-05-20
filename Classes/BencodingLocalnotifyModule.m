@@ -171,7 +171,6 @@
 
 -(void)cancelAllLocalNotifications:(id)args
 {
-	ENSURE_UI_THREAD(cancelAllLocalNotifications,args);
 	[[UIApplication sharedApplication] cancelAllLocalNotifications];
 }
 
@@ -340,8 +339,6 @@
     KrollCallback *callback = [args objectAtIndex:2];
     //Double check that it is a callback
 	ENSURE_TYPE(callback,KrollCallback);
-    //Force this to happen on the UIThread
-    ENSURE_UI_THREAD(searchLocalNotificationsByKey,args);
     
     if (callback){                
         
@@ -364,7 +361,6 @@
     ENSURE_ARG_COUNT(args,1);
 	KrollCallback *callback = [args objectAtIndex:0];
 	ENSURE_TYPE(callback,KrollCallback);
-    ENSURE_UI_THREAD(activeScheduledNotifications,args);
      
     if (callback){                
         
