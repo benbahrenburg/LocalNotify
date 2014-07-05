@@ -31,18 +31,12 @@
 
 -(void)startup
 {
-	// this method is called when the module is first loaded
-	// you *must* call the superclass
 	[super startup];
+    _debug = NO;
 }
 
 -(void)shutdown:(id)sender
 {
-	// this method is called when the module is being unloaded
-	// typically this is during shutdown. make sure you don't do too
-	// much processing here or the app will be quit forceably
-	
-	// you *must* call the superclass
 	[super shutdown:sender];
 }
 
@@ -50,7 +44,6 @@
 
 -(void)dealloc
 {
-	// release any resources that have been retained by the module
 	[super dealloc];
 }
 
@@ -58,8 +51,6 @@
 
 -(void)didReceiveMemoryWarning:(NSNotification*)notification
 {
-	// optionally release any resources that can be dynamically
-	// reloaded once memory is available - such as caches
 	[super didReceiveMemoryWarning:notification];
 }
 
@@ -78,6 +69,16 @@
     }
     //This can call this to let them know if this feature is supported
     return NUMBOOL(hasScheduled);
+}
+
+-(void)enableDebug:(id)unused
+{
+    _debug = YES;
+}
+
+-(void)disableDebug:(id)unused
+{
+    _debug = NO;
 }
 
 -(void)scheduleLocalNotification:(id)args
@@ -400,8 +401,10 @@
             }
         }
     }
-    NSLog(@"%d Notifications have been canceled", cancelCounter);
-    return cancelCounter;    
+    if(_debug){
+        NSLog(@"[DEBUG] %d Notifications have been canceled", cancelCounter);
+    }
+    return cancelCounter;
 }
 -(NSNumber*) cancelLocalNotificationByKey:(id)args
 {
@@ -412,8 +415,11 @@
     //Find what key we are looking for
     NSString *findThisKey = [TiUtils stringValue:[args objectAtIndex:1]];    
     NSInteger cancelCount = [self cancelLocalNotifForKey:findThisId keyName:findThisKey];
-    
-    NSLog(@"%d Notifications have been canceled", cancelCount);
+
+    if(_debug){
+        NSLog(@"[DEBUG] %d Notifications have been canceled", cancelCount);
+    }
+
     return NUMINT(cancelCount);
 }
 -(NSNumber*) cancelLocalNotification:(id)args
@@ -424,7 +430,9 @@
     id findThisId = [args objectAtIndex:0];
     NSInteger cancelCount = [self cancelLocalNotifForKey:findThisId keyName:@"id"];
 
-    NSLog(@"%d Notifications have been canceled", cancelCount);
+    if(_debug){
+        NSLog(@"[DEBUG] %d Notifications have been canceled", cancelCount);
+    }
     return NUMINT(cancelCount);
 }
 

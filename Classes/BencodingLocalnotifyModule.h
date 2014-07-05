@@ -8,6 +8,8 @@
 
 @interface BencodingLocalnotifyModule : TiModule 
 {
+    @private
+    BOOL _debug;
 }
 
 @end
