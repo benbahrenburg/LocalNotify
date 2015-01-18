@@ -2,8 +2,9 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 0.44
+version: 0.45
 apiversion: 2
+architectures: armv7 i386 x86_64 arm64
 description: bencoding.localnotify extends Titaniums existing Local Notification support.
 author: benCoding.Com
 license: See attached licensing file
