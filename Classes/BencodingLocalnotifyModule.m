@@ -40,12 +40,6 @@
 	[super shutdown:sender];
 }
 
-#pragma mark Cleanup 
-
--(void)dealloc
-{
-	[super dealloc];
-}
 
 #pragma mark Internal Memory Management
 
@@ -79,100 +73,6 @@
 -(void)disableDebug:(id)unused
 {
     _debug = NO;
-}
-
--(void)scheduleLocalNotification:(id)args
-{
-    
-	ENSURE_SINGLE_ARG(args,NSDictionary);
-    
-	UILocalNotification *localNotif = [[UILocalNotification alloc] init];
-	
-	id date = [args objectForKey:@"date"];
-	
-	if (date!=nil)
-	{
-		localNotif.fireDate = date;
-		localNotif.timeZone = [NSTimeZone defaultTimeZone];
-	}
-	
-	id repeat = [args objectForKey:@"repeat"];
-	if (repeat!=nil)
-	{
-		if ([repeat isEqual:@"weekly"])
-		{
-			localNotif.repeatInterval = NSWeekCalendarUnit;
-		}
-		else if ([repeat isEqual:@"daily"])
-		{
-			localNotif.repeatInterval = NSDayCalendarUnit;
-		}
-		else if ([repeat isEqual:@"yearly"])
-		{
-			localNotif.repeatInterval = NSYearCalendarUnit;
-		}
-		else if ([repeat isEqual:@"monthly"])
-		{
-			localNotif.repeatInterval = NSMonthCalendarUnit;
-		}
-	}
-	
-	id alertBody = [args objectForKey:@"alertBody"];
-	if (alertBody!=nil)
-	{
-		localNotif.alertBody = alertBody;
-	}
-	id alertAction = [args objectForKey:@"alertAction"];
-	if (alertAction!=nil)
-	{
-		localNotif.alertAction = alertAction;
-	}
-	id alertLaunchImage = [args objectForKey:@"alertLaunchImage"];
-	if (alertLaunchImage!=nil)
-	{
-		localNotif.alertLaunchImage = alertLaunchImage;
-	}
-	
-	id badge = [args objectForKey:@"badge"];
-	if (badge!=nil)
-	{
-		localNotif.applicationIconBadgeNumber = [TiUtils intValue:badge];
-	}
-	
-	id sound = [args objectForKey:@"sound"];
-	if (sound!=nil)
-	{
-		if ([sound isEqual:@"default"])
-		{
-			localNotif.soundName = UILocalNotificationDefaultSoundName;
-		}
-		else
-		{
-			localNotif.soundName = sound;
-		}
-	}
-	
-	id userInfo = [args objectForKey:@"userInfo"];
-	if (userInfo!=nil)
-	{
-		localNotif.userInfo = userInfo;
-	}
-	
-	TiThreadPerformOnMainThread(^{
-		if (date!=nil) {
-			[[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
-		}
-		else {
-			[[UIApplication sharedApplication] presentLocalNotificationNow:localNotif];
-		}
-	}, NO);
-	
-	[localNotif release];
-}
-
--(void)cancelAllLocalNotifications:(id)args
-{
-	[[UIApplication sharedApplication] cancelAllLocalNotifications];
 }
 
 - (NSDictionary *)buildNotificationPayload:(UILocalNotification *)notification
@@ -263,7 +163,7 @@
     {
 
         NSUInteger notificationCount = [notifications count];        
-        NSMutableArray *notificationData = [[[NSMutableArray alloc] init] autorelease];
+        NSMutableArray *notificationData = [[NSMutableArray alloc] init];
         
         for (int iLoop = 0; iLoop < notificationCount; iLoop++) {
             [notificationData addObject:[self buildNotificationPayload:[notifications objectAtIndex:iLoop]]];
@@ -282,7 +182,7 @@
     //Get a list of all of the notifications I've got scheduled
 	NSArray *notifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
     NSInteger addCounter = 0; //Create our counter
-    NSMutableArray *notificationData = [[[NSMutableArray alloc] init] autorelease];
+    NSMutableArray *notificationData = [[NSMutableArray alloc] init];
     
     if (notifications!=nil)
 	{
@@ -422,18 +322,21 @@
 
     return NUMINT(cancelCount);
 }
+
+-(void)scheduleLocalNotification:(id)args
+{
+    NSLog(@"[INFO] Method depreciated please use the Ti.App.iOS.scheduleLocalNotification");
+}
+
+-(void)cancelAllLocalNotifications:(id)args
+{
+    NSLog(@"[INFO] Method depreciated please use the Ti.App.iOS.cancelAllLocalNotifications");
+}
+
 -(NSNumber*) cancelLocalNotification:(id)args
 {
-    //Make sure we're on the right thread and everything
-    ENSURE_ARG_COUNT(args,1);
-    //My user Id to find
-    id findThisId = [args objectAtIndex:0];
-    NSInteger cancelCount = [self cancelLocalNotifForKey:findThisId keyName:@"id"];
-
-    if(_debug){
-        NSLog(@"[DEBUG] %d Notifications have been canceled", cancelCount);
-    }
-    return NUMINT(cancelCount);
+    NSLog(@"[INFO] Method depreciated please use the Ti.App.iOS.cancelAllLocalNotification");
+    return NUMINT(0);
 }
 
 @end

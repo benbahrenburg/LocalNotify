@@ -36,24 +36,6 @@ A code "How To" example is provided in the app.js located in the project's examp
 <h2>Methods</h2>
 <hr />
 
-<h3>scheduleLocalNotification</h3>
-This method takes all of the same parameters as the [Titanium official API](http://docs.appcelerator.com/titanium/2.0/index.html#!/api/Titanium.App.iOS-method-scheduleLocalNotification), but does not return a notification object. 
-
-Because the notification object is not returned, you can schedule your notifications without requiring a background service.  For example you can use the below code sample under a button click event. 
-
-The below sample shows you how to schedule a local notification to run in 30 seconds from now.
-<pre><code>
-
-	notify.scheduleLocalNotification({
-		alertBody:"This is a test of benCoding.localNotify",
-		alertAction:"Just a test",
-		userInfo:{"id":1,"hello":"world"},
-		date:new Date(new Date().getTime() + 30000) 
-	});
-
-	alert("LocalNotification Scheduled");
-</code></pre>
-
 <h3>activeScheduledNotifications</h3>
 You can use this method to query your scheduled local notifications.  Simply call this method and provide a callback method similar to what is shown below.  The callback will be returned a collection with all of the available information about your scheduled local notifications.
 
@@ -132,24 +114,6 @@ The below sample shows how to get a resultset by using this method.
 
 </code></pre>
 
-<h3>cancelLocalNotification</h3>
-This method allows you to cancel a specific scheduled local notification using the userInfo dictionary.  To do this we use the convention of providing an id within the userInfo dictionary upon notification creation.
-
-In the above scheduleLocalNotification example you see we use userInfo:{"id":1,"hello":"world"} when creating the notification.  
-
-The method cancelLocalNotification returns an integer with the number of scheduled notifications canceled. Since you can schedule one or more notifications with the same userInfo.id property this will let you know how many where removed without having to re-run the activeScheduledNotifications method. 
-
-The below sample shows how to cancel a local notification with the userInfo id property set to 1.  After canceling we query the saved notifications to confirm the cancel was successful.
-
-<pre><code>
-
-	//We are going to remove all of the LocalNotifications scheduled with a userInfo id value of 1
-	var canceledCount = notify.cancelLocalNotification(1);
-	alert("You have canceled " + canceledCount + " notifications");
-	//Now query the scheduled notifications to make sure our local notification was canceled
-	notify.activeScheduledNotifications(localNotificationCallback);
-
-</code></pre>
 
 <h3>cancelLocalNotificationByKey</h3>
 This method allows you to cancel a specific scheduled local notification using any key defined in the userInfo dictionary.  
@@ -172,18 +136,6 @@ The below sample shows how to cancel a local notification with the userInfo "cat
 
 </code></pre>
 
-<h3>cancelAllLocalNotifications</h3>
-This method cancels all scheduled local notifications. 
-
-Please note this method works the same as the native Titanium method discussed [here](http://docs.appcelerator.com/titanium/2.0/index.html#!/api/Titanium.App.iOS-method-scheduleLocalNotification).
-
-The below sample shows how to cancel all scheduled local notifications.
-<pre><code>
-
-	//Cancel all scheduled local notifications
-	notify.cancelAllLocalNotifications();
-
-</code></pre>
 
 <h2>Licensing & Support</h2>
 
