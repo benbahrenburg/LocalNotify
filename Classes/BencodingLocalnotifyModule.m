@@ -132,7 +132,7 @@
     }         
     if([notification applicationIconBadgeNumber]!=0)
     {
-        [data setObject:[NSNumber numberWithInt:[notification applicationIconBadgeNumber]] forKey:@"badge"];
+        [data setObject:[NSNumber numberWithInt:(int)[notification applicationIconBadgeNumber]] forKey:@"badge"];
     }
     if([notification userInfo]!=nil)
     {
@@ -170,7 +170,7 @@
         } 
         
         NSDictionary *scheduled = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [NSNumber numberWithInt:notificationCount],@"scheduledCount",
+                                        [NSNumber numberWithInt:(int)notificationCount],@"scheduledCount",
                                         notificationData,@"notifications",                                
                                         nil];
         return scheduled;
@@ -210,7 +210,7 @@
     }
     
     NSDictionary *found = [NSDictionary dictionaryWithObjectsAndKeys:
-                           [NSNumber numberWithInt:addCounter],@"scheduledCount",
+                           [NSNumber numberWithInt:(int)addCounter],@"scheduledCount",
                            notificationData,@"notifications",                                
                            nil];
     return found;    
@@ -320,7 +320,7 @@
         NSLog(@"[DEBUG] %d Notifications have been canceled", cancelCount);
     }
 
-    return NUMINT(cancelCount);
+    return NUMINT((int)cancelCount);
 }
 
 -(void)scheduleLocalNotification:(id)args
